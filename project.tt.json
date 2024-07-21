@@ -1,0 +1,9 @@
+{
+  "miniprogramRoot": "./",
+  "projectname": "reader-runner",
+  "appid": "testAppId",
+  "setting": {
+    "es6": false,
+    "minified": false
+  }
+}
