@@ -14,6 +14,8 @@ export default function Index() {
     'FangSong'
   ])
   const [currentFontFamily, setCurrentFontFamily] = useState('Microsoft Yahei')
+  const [meta, setMeta] = useState({})
+  const [nav, setNav] = useState([])
 
   useLoad(() => {
     console.log('Page loaded.')
@@ -27,6 +29,12 @@ export default function Index() {
         method: 'default'
       })
       renditionRef.current.display()
+      book.loaded.metadata.then(metadata => {
+        setMeta(metadata)
+      })
+      book.loaded.navigation.then(navdata => {
+        setNav(navdata.toc)
+      })
   }, [])
 
   const clickPrev = () => {
@@ -54,6 +62,12 @@ export default function Index() {
   return (
     <View className='index'>
       <View id='area'></View>
+      <View>{meta.title}</View>
+      <View>
+        {nav.map(navItem => (
+          <View key={navItem.id}>{navItem.label}</View>
+        ))}
+      </View>
       <Button onClick={clickPrev}>prev</Button>
       <Button onClick={clickNext}>next</Button>
       <Picker mode='selector' range={fontSizeRange} onChange={changeFontSize}>
