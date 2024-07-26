@@ -1,132 +1,123 @@
-'use strict';
+const { create, defineProperty, defineProperties } = Object;
+const { apply, call } = Function.prototype;
+const defaultDescriptor = { configurable: true, enumerable: false, writable: true };
 
-var d        = require('./d')
-  , callable = require('./es5-ext/object/valid-callable')
+// Helper function to check if a given argument is callable
+function isCallable(fn) {
+  if (typeof fn !== 'function') {
+    throw new TypeError(fn + ' is not a function');
+  }
+}
 
-  , apply = Function.prototype.apply, call = Function.prototype.call
-  , create = Object.create, defineProperty = Object.defineProperty
-  , defineProperties = Object.defineProperties
-  , hasOwnProperty = Object.prototype.hasOwnProperty
-  , descriptor = { configurable: true, enumerable: false, writable: true }
+// Add an event listener
+function on(eventType, listener) {
+  isCallable(listener);
+  let events;
 
-  , on, once, off, emit, methods, descriptors, base;
+  // Ensure the events storage object exists
+  if (!Object.prototype.hasOwnProperty.call(this, '__events__')) {
+    events = defaultDescriptor.value = create(null);
+    defineProperty(this, '__events__', defaultDescriptor);
+    defaultDescriptor.value = null;
+  } else {
+    events = this.__events__;
+  }
 
-on = function (type, listener) {
-	var data;
+  // Add listener to the specified event type
+  if (!events[eventType]) {
+    events[eventType] = listener;
+  } else if (Array.isArray(events[eventType])) {
+    events[eventType].push(listener);
+  } else {
+    events[eventType] = [events[eventType], listener];
+  }
 
-	callable(listener);
+  return this;
+}
 
-	if (!hasOwnProperty.call(this, '__ee__')) {
-		data = descriptor.value = create(null);
-		defineProperty(this, '__ee__', descriptor);
-		descriptor.value = null;
-	} else {
-		data = this.__ee__;
-	}
-	if (!data[type]) data[type] = listener;
-	else if (typeof data[type] === 'object') data[type].push(listener);
-	else data[type] = [data[type], listener];
+// Add an event listener that will be called only once
+function once(eventType, listener) {
+  isCallable(listener);
+  const self = this;
 
-	return this;
+  function onceListener(...args) {
+    off.call(self, eventType, onceListener);
+    apply.call(listener, this, args);
+  }
+
+  onceListener.__originalListener__ = listener;
+  on.call(this, eventType, onceListener);
+
+  return this;
+}
+
+// Remove an event listener
+function off(eventType, listener) {
+  isCallable(listener);
+
+  if (!Object.prototype.hasOwnProperty.call(this, '__events__')) {
+    return this;
+  }
+  const events = this.__events__;
+  const listeners = events[eventType];
+
+  if (!listeners) {
+    return this;
+  }
+
+  if (Array.isArray(listeners)) {
+    for (let i = 0; i < listeners.length; i++) {
+      const currentListener = listeners[i];
+      if (currentListener === listener || currentListener.__originalListener__ === listener) {
+        listeners.splice(i, 1);
+        break;
+      }
+    }
+
+    if (listeners.length === 0) {
+      delete events[eventType];
+    } else if (listeners.length === 1) {
+      events[eventType] = listeners[0];
+    }
+  } else if (listeners === listener || listeners.__originalListener__ === listener) {
+    delete events[eventType];
+  }
+
+  return this;
+}
+
+// Emit an event, calling all listeners for that event type
+function emit(eventType, ...args) {
+  if (!Object.prototype.hasOwnProperty.call(this, '__events__')) {
+    return;
+  }
+  const listeners = this.__events__[eventType];
+
+  if (!listeners) {
+    return;
+  }
+
+  if (Array.isArray(listeners)) {
+    listeners.slice().forEach(listener => apply.call(listener, this, args));
+  } else {
+    apply.call(listeners, this, args);
+  }
+}
+
+const methods = { on, once, off, emit };
+
+const descriptors = {
+  on: { ...defaultDescriptor, value: on },
+  once: { ...defaultDescriptor, value: once },
+  off: { ...defaultDescriptor, value: off },
+  emit: { ...defaultDescriptor, value: emit }
 };
 
-once = function (type, listener) {
-	var once, self;
+const baseObject = defineProperties({}, descriptors);
 
-	callable(listener);
-	self = this;
-	on.call(this, type, once = function () {
-		off.call(self, type, once);
-		apply.call(listener, this, arguments);
-	});
+// Main export function to add event emitter methods to an object
+export default function (obj) {
+  return obj == null ? create(baseObject) : defineProperties(Object(obj), descriptors);
+}
 
-	once.__eeOnceListener__ = listener;
-	return this;
-};
-
-off = function (type, listener) {
-	var data, listeners, candidate, i;
-
-	callable(listener);
-
-	if (!hasOwnProperty.call(this, '__ee__')) return this;
-	data = this.__ee__;
-	if (!data[type]) return this;
-	listeners = data[type];
-
-	if (typeof listeners === 'object') {
-		for (i = 0; (candidate = listeners[i]); ++i) {
-			if ((candidate === listener) ||
-					(candidate.__eeOnceListener__ === listener)) {
-				if (listeners.length === 2) data[type] = listeners[i ? 0 : 1];
-				else listeners.splice(i, 1);
-			}
-		}
-	} else {
-		if ((listeners === listener) ||
-				(listeners.__eeOnceListener__ === listener)) {
-			delete data[type];
-		}
-	}
-
-	return this;
-};
-
-emit = function (type) {
-	var i, l, listener, listeners, args;
-
-	if (!hasOwnProperty.call(this, '__ee__')) return;
-	listeners = this.__ee__[type];
-	if (!listeners) return;
-
-	if (typeof listeners === 'object') {
-		l = arguments.length;
-		args = new Array(l - 1);
-		for (i = 1; i < l; ++i) args[i - 1] = arguments[i];
-
-		listeners = listeners.slice();
-		for (i = 0; (listener = listeners[i]); ++i) {
-			apply.call(listener, this, args);
-		}
-	} else {
-		switch (arguments.length) {
-		case 1:
-			call.call(listeners, this);
-			break;
-		case 2:
-			call.call(listeners, this, arguments[1]);
-			break;
-		case 3:
-			call.call(listeners, this, arguments[1], arguments[2]);
-			break;
-		default:
-			l = arguments.length;
-			args = new Array(l - 1);
-			for (i = 1; i < l; ++i) {
-				args[i - 1] = arguments[i];
-			}
-			apply.call(listeners, this, args);
-		}
-	}
-};
-
-methods = {
-	on: on,
-	once: once,
-	off: off,
-	emit: emit
-};
-
-descriptors = {
-	on: d(on),
-	once: d(once),
-	off: d(off),
-	emit: d(emit)
-};
-
-base = defineProperties({}, descriptors);
-
-module.exports = exports = function (o) {
-	return (o == null) ? create(base) : defineProperties(Object(o), descriptors);
-};
-exports.methods = methods;
+export { methods };
