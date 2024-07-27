@@ -1,4 +1,4 @@
-import {uuid, isNumber, isElement, windowBounds, extend} from "../../utils/core";
+import { uuid, isNumber, isElement, windowBounds, extend } from "../../utils/core";
 import throttle from 'lodash/throttle'
 
 class Stage {
@@ -8,7 +8,7 @@ class Stage {
 
 		this.container = this.create(this.settings);
 
-		if(this.settings.hidden) {
+		if (this.settings.hidden) {
 			this.wrapper = this.wrap(this.container);
 		}
 
@@ -18,20 +18,20 @@ class Stage {
 	* Creates an element to render to.
 	* Resizes to passed width and height or to the elements size
 	*/
-	create(options){
-		let height  = options.height;// !== false ? options.height : "100%";
-		let width   = options.width;// !== false ? options.width : "100%";
-		let overflow  = options.overflow || false;
+	create(options) {
+		let height = options.height;// !== false ? options.height : "100%";
+		let width = options.width;// !== false ? options.width : "100%";
+		let overflow = options.overflow || false;
 		let axis = options.axis || "vertical";
 		let direction = options.direction;
 
 		extend(this.settings, options);
 
-		if(options.height && isNumber(options.height)) {
+		if (options.height && isNumber(options.height)) {
 			height = options.height + "px";
 		}
 
-		if(options.width && isNumber(options.width)) {
+		if (options.width && isNumber(options.width)) {
 			width = options.width + "px";
 		}
 
@@ -48,18 +48,18 @@ class Stage {
 		container.style.verticalAlign = "top";
 		container.style.position = "relative";
 
-		if(axis === "horizontal") {
+		if (axis === "horizontal") {
 			// container.style.whiteSpace = "nowrap";
 			container.style.display = "flex";
 			container.style.flexDirection = "row";
 			container.style.flexWrap = "nowrap";
 		}
 
-		if(width){
+		if (width) {
 			container.style.width = width;
 		}
 
-		if(height){
+		if (height) {
 			container.style.height = height;
 		}
 
@@ -100,32 +100,32 @@ class Stage {
 	}
 
 
-	getElement(_element){
+	getElement(_element) {
 		var element;
 
-		if(isElement(_element)) {
+		if (isElement(_element)) {
 			element = _element;
 		} else if (typeof _element === "string") {
 			element = document.getElementById(_element);
 		}
 
-		if(!element){
+		if (!element) {
 			throw new Error("Not an Element");
 		}
 
 		return element;
 	}
 
-	attachTo(what){
+	attachTo(what) {
 
 		var element = this.getElement(what);
 		var base;
 
-		if(!element){
+		if (!element) {
 			return;
 		}
 
-		if(this.settings.hidden) {
+		if (this.settings.hidden) {
 			base = this.wrapper;
 		} else {
 			base = this.container;
@@ -143,32 +143,32 @@ class Stage {
 		return this.container;
 	}
 
-	onResize(func){
+	onResize(func) {
 		// Only listen to window for resize event if width and height are not fixed.
 		// This applies if it is set to a percent or auto.
-		if(!isNumber(this.settings.width) ||
-			 !isNumber(this.settings.height) ) {
+		if (!isNumber(this.settings.width) ||
+			!isNumber(this.settings.height)) {
 			this.resizeFunc = throttle(func, 50);
 			window.addEventListener("resize", this.resizeFunc, false);
 		}
 
 	}
 
-	onOrientationChange(func){
+	onOrientationChange(func) {
 		this.orientationChangeFunc = func;
 		window.addEventListener("orientationchange", this.orientationChangeFunc, false);
 	}
 
-	size(width, height){
+	size(width, height) {
 		var bounds;
 		let _width = width || this.settings.width;
 		let _height = height || this.settings.height;
 
 		// If width or height are set to false, inherit them from containing element
-		if(width === null) {
+		if (width === null) {
 			bounds = this.element.getBoundingClientRect();
 
-			if(bounds.width) {
+			if (bounds.width) {
 				width = Math.floor(bounds.width);
 				this.container.style.width = width + "px";
 			}
@@ -180,10 +180,10 @@ class Stage {
 			}
 		}
 
-		if(height === null) {
+		if (height === null) {
 			bounds = bounds || this.element.getBoundingClientRect();
 
-			if(bounds.height) {
+			if (bounds.height) {
 				height = bounds.height;
 				this.container.style.height = height + "px";
 			}
@@ -196,11 +196,11 @@ class Stage {
 			}
 		}
 
-		if(!isNumber(width)) {
+		if (!isNumber(width)) {
 			width = this.container.clientWidth;
 		}
 
-		if(!isNumber(height)) {
+		if (!isNumber(height)) {
 			height = this.container.clientHeight;
 		}
 
@@ -225,34 +225,34 @@ class Stage {
 
 		if (!_width) {
 			width = _windowBounds.width -
-								bodyPadding.left -
-								bodyPadding.right;
+				bodyPadding.left -
+				bodyPadding.right;
 		}
 
 		if ((this.settings.fullsize && !_height) || !_height) {
 			height = _windowBounds.height -
-								bodyPadding.top -
-								bodyPadding.bottom;
+				bodyPadding.top -
+				bodyPadding.bottom;
 		}
 
 		return {
 			width: width -
-							this.containerPadding.left -
-							this.containerPadding.right,
+				this.containerPadding.left -
+				this.containerPadding.right,
 			height: height -
-							this.containerPadding.top -
-							this.containerPadding.bottom
+				this.containerPadding.top -
+				this.containerPadding.bottom
 		};
 
 	}
 
-	bounds(){
+	bounds() {
 		let box;
 		if (this.container.style.overflow !== "visible") {
 			box = this.container && this.container.getBoundingClientRect();
 		}
 
-		if(!box || !box.width || !box.height) {
+		if (!box || !box.width || !box.height) {
 			return windowBounds();
 		} else {
 			return box;
@@ -260,7 +260,7 @@ class Stage {
 
 	}
 
-	getSheet(){
+	getSheet() {
 		var style = document.createElement("style");
 
 		// WebKit hack --> https://davidwalsh.name/add-rules-stylesheets
@@ -271,17 +271,17 @@ class Stage {
 		return style.sheet;
 	}
 
-	addStyleRules(selector, rulesArray){
+	addStyleRules(selector, rulesArray) {
 		var scope = "#" + this.id + " ";
 		var rules = "";
 
-		if(!this.sheet){
+		if (!this.sheet) {
 			this.sheet = this.getSheet();
 		}
 
-		rulesArray.forEach(function(set) {
+		rulesArray.forEach(function (set) {
 			for (var prop in set) {
-				if(set.hasOwnProperty(prop)) {
+				if (set.hasOwnProperty(prop)) {
 					rules += prop + ":" + set[prop] + ";";
 				}
 			}
@@ -291,7 +291,7 @@ class Stage {
 	}
 
 	axis(axis) {
-		if(axis === "horizontal") {
+		if (axis === "horizontal") {
 			this.container.style.display = "flex";
 			this.container.style.flexDirection = "row";
 			this.container.style.flexWrap = "nowrap";
@@ -343,13 +343,13 @@ class Stage {
 
 		if (this.element) {
 
-			if(this.settings.hidden) {
+			if (this.settings.hidden) {
 				base = this.wrapper;
 			} else {
 				base = this.container;
 			}
 
-			if(this.element.contains(this.container)) {
+			if (this.element.contains(this.container)) {
 				this.element.removeChild(this.container);
 			}
 

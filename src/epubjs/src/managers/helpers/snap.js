@@ -1,25 +1,25 @@
-import {extend, defer, requestAnimationFrame, prefixed} from "../../utils/core";
+import { extend, defer, requestAnimationFrame, prefixed } from "../../utils/core";
 import { EVENTS, DOM_EVENTS } from "../../utils/constants";
 import EventEmitter from "../../../event-emitter";
 
 // easing equations from https://github.com/danro/easing-js/blob/master/easing.js
 const PI_D2 = (Math.PI / 2);
 const EASING_EQUATIONS = {
-		easeOutSine: function (pos) {
-				return Math.sin(pos * PI_D2);
-		},
-		easeInOutSine: function (pos) {
-				return (-0.5 * (Math.cos(Math.PI * pos) - 1));
-		},
-		easeInOutQuint: function (pos) {
-				if ((pos /= 0.5) < 1) {
-						return 0.5 * Math.pow(pos, 5);
-				}
-				return 0.5 * (Math.pow((pos - 2), 5) + 2);
-		},
-		easeInCubic: function(pos) {
-			return Math.pow(pos, 3);
-  	}
+	easeOutSine: function (pos) {
+		return Math.sin(pos * PI_D2);
+	},
+	easeInOutSine: function (pos) {
+		return (-0.5 * (Math.cos(Math.PI * pos) - 1));
+	},
+	easeInOutQuint: function (pos) {
+		if ((pos /= 0.5) < 1) {
+			return 0.5 * Math.pow(pos, 5);
+		}
+		return 0.5 * (Math.pow((pos - 2), 5) + 2);
+	},
+	easeInCubic: function (pos) {
+		return Math.pow(pos, 3);
+	}
 };
 
 class Snap {
@@ -155,7 +155,7 @@ class Snap {
 		});
 	}
 
-	triggerViewEvent(e, contents){
+	triggerViewEvent(e, contents) {
 		this.emit(e.type, e, contents);
 	}
 
@@ -254,7 +254,7 @@ class Snap {
 		return (left % snapWidth) !== 0;
 	}
 
-	snap(howMany=0) {
+	snap(howMany = 0) {
 		let left = this.scrollLeft;
 		let snapWidth = this.layout.pageWidth * this.layout.divisor;
 		let snapTo = Math.round(left / snapWidth) * snapWidth;
@@ -291,12 +291,12 @@ class Snap {
 			}
 
 			if (time < 1) {
-					window.requestAnimationFrame(tick.bind(this));
-					this.scrollTo(start + ((destination - start) * time), 0);
+				window.requestAnimationFrame(tick.bind(this));
+				this.scrollTo(start + ((destination - start) * time), 0);
 			} else {
-					this.scrollTo(destination, 0);
-					this.snapping = false;
-					deferred.resolve();
+				this.scrollTo(destination, 0);
+				this.snapping = false;
+				deferred.resolve();
 			}
 		}
 
@@ -305,7 +305,7 @@ class Snap {
 		return deferred.promise;
 	}
 
-	scrollTo(left=0, top=0) {
+	scrollTo(left = 0, top = 0) {
 		if (this.fullsize) {
 			window.scroll(left, top);
 		} else {

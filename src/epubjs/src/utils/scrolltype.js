@@ -27,7 +27,7 @@ export default function scrollType() {
 
 export function createDefiner() {
 	var definer = document.createElement('div');
-	definer.dir="rtl";
+	definer.dir = "rtl";
 
 	definer.style.position = "fixed";
 	definer.style.width = "1px";

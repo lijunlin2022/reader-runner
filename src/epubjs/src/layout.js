@@ -20,8 +20,8 @@ class Layout {
 		this._evenSpreads = settings.evenSpreads || false;
 
 		if (settings.flow === "scrolled" ||
-				settings.flow === "scrolled-continuous" ||
-				settings.flow === "scrolled-doc") {
+			settings.flow === "scrolled-continuous" ||
+			settings.flow === "scrolled-doc") {
 			this._flow = "scrolled";
 		} else {
 			this._flow = "paginated";
@@ -58,16 +58,16 @@ class Layout {
 	 * @return {string} simplified flow
 	 */
 	flow(flow) {
-		if (typeof(flow) != "undefined") {
+		if (typeof (flow) != "undefined") {
 			if (flow === "scrolled" ||
-					flow === "scrolled-continuous" ||
-					flow === "scrolled-doc") {
+				flow === "scrolled-continuous" ||
+				flow === "scrolled-doc") {
 				this._flow = "scrolled";
 			} else {
 				this._flow = "paginated";
 			}
 			// this.props.flow = this._flow;
-			this.update({flow: this._flow});
+			this.update({ flow: this._flow });
 		}
 		return this._flow;
 	}
@@ -84,7 +84,7 @@ class Layout {
 		if (spread) {
 			this._spread = (spread === "none") ? false : true;
 			// this.props.spread = this._spread;
-			this.update({spread: this._spread});
+			this.update({ spread: this._spread });
 		}
 
 		if (min >= 0) {
@@ -100,7 +100,7 @@ class Layout {
 	 * @param  {number} _height height of the rendering
 	 * @param  {number} _gap    width of the gap between columns
 	 */
-	calculate(_width, _height, _gap){
+	calculate(_width, _height, _gap) {
 
 		var divisor = 1;
 		var gap = _gap || 0;
@@ -127,12 +127,12 @@ class Layout {
 			gap = ((section % 2 === 0) ? section : section - 1);
 		}
 
-		if (this.name === "pre-paginated" ) {
+		if (this.name === "pre-paginated") {
 			gap = 0;
 		}
 
 		//-- Double Page
-		if(divisor > 1) {
+		if (divisor > 1) {
 			// width = width - gap;
 			// columnWidth = (width - gap) / divisor;
 			// gap = gap / divisor;
@@ -189,7 +189,7 @@ class Layout {
 	 * @param  {Contents} contents
 	 * @return {Promise}
 	 */
-	format(contents, section, axis){
+	format(contents, section, axis) {
 		var formating;
 
 		if (this.name === "pre-paginated") {
@@ -199,7 +199,7 @@ class Layout {
 		} else if (axis && axis === "horizontal") {
 			formating = contents.size(null, this.height);
 		} else {
-			formating = contents.size(this.width, null);				
+			formating = contents.size(this.width, null);
 		}
 
 		return formating; // might be a promise in some View Managers
@@ -220,11 +220,11 @@ class Layout {
 			pages = 1;
 		} else if (this._flow === "paginated") {
 			pageLength = pageLength || this.delta;
-			spreads = Math.ceil( totalLength / pageLength);
+			spreads = Math.ceil(totalLength / pageLength);
 			pages = spreads * this.divisor;
 		} else { // scrolled
 			pageLength = pageLength || this.height;
-			spreads = Math.ceil( totalLength / pageLength);
+			spreads = Math.ceil(totalLength / pageLength);
 			pages = spreads;
 		}
 
@@ -248,7 +248,7 @@ class Layout {
 			}
 		});
 
-		if(Object.keys(props).length > 0) {
+		if (Object.keys(props).length > 0) {
 			let newProps = extend(this.props, props);
 			this.emit(EVENTS.LAYOUT.UPDATED, newProps, props);
 		}

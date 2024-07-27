@@ -2,7 +2,7 @@
 
 if (!process) {
   var process = {
-    "cwd" : function () { return '/' }
+    "cwd": function () { return '/' }
   };
 }
 
@@ -30,8 +30,8 @@ function normalizeStringPosix(path, allowAboveRoot) {
         // NOOP
       } else if (lastSlash !== i - 1 && dots === 2) {
         if (res.length < 2 ||
-            res.charCodeAt(res.length - 1) !== 46/*.*/ ||
-            res.charCodeAt(res.length - 2) !== 46/*.*/) {
+          res.charCodeAt(res.length - 1) !== 46/*.*/ ||
+          res.charCodeAt(res.length - 2) !== 46/*.*/) {
           if (res.length > 2) {
             var start = res.length - 1;
             var j = start;
@@ -432,13 +432,13 @@ var posix = {
     }
 
     if (startDot === -1 ||
-        end === -1 ||
-        // We saw a non-dot character immediately before the dot
-        preDotState === 0 ||
-        // The (right-most) trimmed path component is exactly '..'
-        (preDotState === 1 &&
-         startDot === end - 1 &&
-         startDot === startPart + 1)) {
+      end === -1 ||
+      // We saw a non-dot character immediately before the dot
+      preDotState === 0 ||
+      // The (right-most) trimmed path component is exactly '..'
+      (preDotState === 1 &&
+        startDot === end - 1 &&
+        startDot === startPart + 1)) {
       return '';
     }
     return path.slice(startDot, end);
@@ -448,7 +448,7 @@ var posix = {
   format: function format(pathObject) {
     if (pathObject === null || typeof pathObject !== 'object') {
       throw new TypeError(
-        'Parameter "pathObject" must be an object, not ' + typeof(pathObject)
+        'Parameter "pathObject" must be an object, not ' + typeof (pathObject)
       );
     }
     return _format('/', pathObject);
@@ -512,13 +512,13 @@ var posix = {
     }
 
     if (startDot === -1 ||
-        end === -1 ||
-        // We saw a non-dot character immediately before the dot
-        preDotState === 0 ||
-        // The (right-most) trimmed path component is exactly '..'
-        (preDotState === 1 &&
-         startDot === end - 1 &&
-         startDot === startPart + 1)) {
+      end === -1 ||
+      // We saw a non-dot character immediately before the dot
+      preDotState === 0 ||
+      // The (right-most) trimmed path component is exactly '..'
+      (preDotState === 1 &&
+        startDot === end - 1 &&
+        startDot === startPart + 1)) {
       if (end !== -1) {
         if (startPart === 0 && isAbsolute)
           ret.base = ret.name = path.slice(1, end);

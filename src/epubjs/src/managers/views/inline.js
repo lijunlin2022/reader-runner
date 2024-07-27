@@ -1,5 +1,5 @@
 import EventEmitter from "../../../event-emitter";
-import {extend, borders, uuid, isNumber, bounds, defer, qs, parse} from "../../utils/core";
+import { extend, borders, uuid, isNumber, bounds, defer, qs, parse } from "../../utils/core";
 import EpubCFI from "../../epubcfi";
 import Contents from "../../contents";
 import { EVENTS } from "../../utils/constants";
@@ -7,7 +7,7 @@ import { EVENTS } from "../../utils/constants";
 class InlineView {
 	constructor(section, options) {
 		this.settings = extend({
-			ignoreClass : "",
+			ignoreClass: "",
 			axis: "vertical",
 			width: 0,
 			height: 0,
@@ -25,10 +25,10 @@ class InlineView {
 		this.displayed = false;
 		this.rendered = false;
 
-		this.width  = this.settings.width;
+		this.width = this.settings.width;
 		this.height = this.settings.height;
 
-		this.fixedWidth  = 0;
+		this.fixedWidth = 0;
 		this.fixedHeight = 0;
 
 		// Blank Cfi for Parsing
@@ -55,7 +55,7 @@ class InlineView {
 
 		element.style.overflow = "hidden";
 
-		if(axis && axis == "horizontal"){
+		if (axis && axis == "horizontal") {
 			element.style.display = "inline-block";
 		} else {
 			element.style.display = "block";
@@ -66,11 +66,11 @@ class InlineView {
 
 	create() {
 
-		if(this.frame) {
+		if (this.frame) {
 			return this.frame;
 		}
 
-		if(!this.element) {
+		if (!this.element) {
 			this.element = this.createContainer();
 		}
 
@@ -86,7 +86,7 @@ class InlineView {
 		this.element.style.visibility = "hidden";
 		this.frame.style.visibility = "hidden";
 
-		if(this.settings.axis === "horizontal") {
+		if (this.settings.axis === "horizontal") {
 			this.frame.style.width = "auto";
 			this.frame.style.height = "0";
 		} else {
@@ -115,13 +115,13 @@ class InlineView {
 
 		// Render Chain
 		return this.section.render(request)
-			.then(function(contents){
+			.then(function (contents) {
 				return this.load(contents);
 			}.bind(this))
 			// .then(function(doc){
 			// 	return this.hooks.content.trigger(view, this);
 			// }.bind(this))
-			.then(function(){
+			.then(function () {
 				// this.settings.layout.format(view.contents);
 				// return this.hooks.layout.trigger(view, this);
 			}.bind(this))
@@ -131,7 +131,7 @@ class InlineView {
 			// .then(function(){
 			// 	return this.hooks.render.trigger(view, this);
 			// }.bind(this))
-			.then(function(){
+			.then(function () {
 
 				// apply the layout function to the contents
 				this.settings.layout.format(this.contents);
@@ -142,7 +142,7 @@ class InlineView {
 				// Listen for events that require an expansion of the iframe
 				this.addListeners();
 
-				if(show !== false) {
+				if (show !== false) {
 					//this.q.enqueue(function(view){
 					this.show();
 					//}, view);
@@ -152,7 +152,7 @@ class InlineView {
 				this.emit(EVENTS.VIEWS.RENDERED, this.section);
 
 			}.bind(this))
-			.catch(function(e){
+			.catch(function (e) {
 				this.emit(EVENTS.VIEWS.LOAD_ERROR, e);
 			}.bind(this));
 
@@ -163,10 +163,10 @@ class InlineView {
 		var width = _width || this.settings.width;
 		var height = _height || this.settings.height;
 
-		if(this.layout.name === "pre-paginated") {
+		if (this.layout.name === "pre-paginated") {
 			// TODO: check if these are different than the size set in chapter
 			this.lock("both", width, height);
-		} else if(this.settings.axis === "horizontal") {
+		} else if (this.settings.axis === "horizontal") {
 			this.lock("height", width, height);
 		} else {
 			this.lock("width", width, height);
@@ -179,25 +179,25 @@ class InlineView {
 		var elBorders = borders(this.element);
 		var iframeBorders;
 
-		if(this.frame) {
+		if (this.frame) {
 			iframeBorders = borders(this.frame);
 		} else {
-			iframeBorders = {width: 0, height: 0};
+			iframeBorders = { width: 0, height: 0 };
 		}
 
-		if(what == "width" && isNumber(width)){
+		if (what == "width" && isNumber(width)) {
 			this.lockedWidth = width - elBorders.width - iframeBorders.width;
 			this.resize(this.lockedWidth, false); //  width keeps ratio correct
 		}
 
-		if(what == "height" && isNumber(height)){
+		if (what == "height" && isNumber(height)) {
 			this.lockedHeight = height - elBorders.height - iframeBorders.height;
 			this.resize(false, this.lockedHeight);
 		}
 
-		if(what === "both" &&
-				isNumber(width) &&
-				isNumber(height)){
+		if (what === "both" &&
+			isNumber(width) &&
+			isNumber(height)) {
 
 			this.lockedWidth = width - elBorders.width - iframeBorders.width;
 			this.lockedHeight = height - elBorders.height - iframeBorders.height;
@@ -214,21 +214,21 @@ class InlineView {
 
 		var textWidth, textHeight;
 
-		if(!this.frame || this._expanding) return;
+		if (!this.frame || this._expanding) return;
 
 		this._expanding = true;
 
 		// Expand Horizontally
-		if(this.settings.axis === "horizontal") {
+		if (this.settings.axis === "horizontal") {
 			width = this.contentWidth(textWidth);
 		} // Expand Vertically
-		else if(this.settings.axis === "vertical") {
+		else if (this.settings.axis === "vertical") {
 			height = this.contentHeight(textHeight);
 		}
 
 		// Only Resize if dimensions have changed or
 		// if Frame is still hidden, so needs reframing
-		if(this._needsReframe || width != this._width || height != this._height){
+		if (this._needsReframe || width != this._width || height != this._height) {
 			this.resize(width, height);
 		}
 
@@ -246,14 +246,14 @@ class InlineView {
 
 	resize(width, height) {
 
-		if(!this.frame) return;
+		if (!this.frame) return;
 
-		if(isNumber(width)){
+		if (isNumber(width)) {
 			this.frame.style.width = width + "px";
 			this._width = width;
 		}
 
-		if(isNumber(height)){
+		if (isNumber(height)) {
 			this.frame.style.height = height + "px";
 			this._height = height;
 		}
@@ -360,7 +360,7 @@ class InlineView {
 
 		this.element.style.visibility = "visible";
 
-		if(this.frame){
+		if (this.frame) {
 			this.frame.style.visibility = "visible";
 		}
 
@@ -399,7 +399,7 @@ class InlineView {
 	}
 
 	bounds() {
-		if(!this.elementBounds) {
+		if (!this.elementBounds) {
 			this.elementBounds = bounds(this.element);
 		}
 		return this.elementBounds;
@@ -407,7 +407,7 @@ class InlineView {
 
 	destroy() {
 
-		if(this.displayed){
+		if (this.displayed) {
 			this.displayed = false;
 
 			this.removeListeners();

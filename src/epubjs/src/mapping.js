@@ -10,7 +10,7 @@ import { nodeBounds } from "./utils/core";
  * @param {boolean} [dev] toggle developer highlighting
  */
 class Mapping {
-	constructor(layout, direction, axis, dev=false) {
+	constructor(layout, direction, axis, dev = false) {
 		this.layout = layout;
 		this.horizontal = (axis === "horizontal") ? true : false;
 		this.direction = direction || "ltr";
@@ -74,13 +74,13 @@ class Mapping {
 		// IE11 has strange issue, if root is text node IE throws exception on
 		// calling treeWalker.nextNode(), saying
 		// Unexpected call to method or property access instead of returning null value
-		if(root && root.nodeType === Node.TEXT_NODE) {
+		if (root && root.nodeType === Node.TEXT_NODE) {
 			return;
 		}
 		// safeFilter is required so that it can work in IE as filter is a function for IE
 		// and for other browser filter is an object.
 		var filter = {
-			acceptNode: function(node) {
+			acceptNode: function (node) {
 				if (node.data.trim().length > 0) {
 					return NodeFilter.FILTER_ACCEPT;
 				} else {
@@ -96,16 +96,16 @@ class Mapping {
 		var result;
 		while ((node = treeWalker.nextNode())) {
 			result = func(node);
-			if(result) break;
+			if (result) break;
 		}
 
 		return result;
 	}
 
-	findRanges(view){
+	findRanges(view) {
 		var columns = [];
 		var scrollWidth = view.contents.scrollWidth();
-		var spreads = Math.ceil( scrollWidth / this.layout.spreadWidth);
+		var spreads = Math.ceil(scrollWidth / this.layout.spreadWidth);
 		var count = spreads * this.layout.divisor;
 		var columnWidth = this.layout.columnWidth;
 		var gap = this.layout.gap;
@@ -113,7 +113,7 @@ class Mapping {
 
 		for (var i = 0; i < count.pages; i++) {
 			start = (columnWidth + gap) * i;
-			end = (columnWidth * (i+1)) + (gap * i);
+			end = (columnWidth * (i + 1)) + (gap * i);
 			columns.push({
 				start: this.findStart(view.document.body, start, end),
 				end: this.findEnd(view.document.body, start, end)
@@ -131,7 +131,7 @@ class Mapping {
 	 * @param {number} end position to end at
 	 * @return {Range}
 	 */
-	findStart(root, start, end){
+	findStart(root, start, end) {
 		var stack = [root];
 		var $el;
 		var found;
@@ -154,7 +154,7 @@ class Mapping {
 					left = this.horizontal ? elPos.left : elPos.top;
 					right = this.horizontal ? elPos.right : elPos.bottom;
 
-					if( left >= start && left <= end ) {
+					if (left >= start && left <= end) {
 						return node;
 					} else if (right > start) {
 						return node;
@@ -168,7 +168,7 @@ class Mapping {
 					left = elPos.left;
 					right = elPos.right;
 
-					if( right <= end && right >= start ) {
+					if (right <= end && right >= start) {
 						return node;
 					} else if (left < end) {
 						return node;
@@ -182,7 +182,7 @@ class Mapping {
 					top = elPos.top;
 					bottom = elPos.bottom;
 
-					if( top >= start && top <= end ) {
+					if (top >= start && top <= end) {
 						return node;
 					} else if (bottom > start) {
 						return node;
@@ -196,7 +196,7 @@ class Mapping {
 
 			});
 
-			if(found) {
+			if (found) {
 				return this.findTextStartRange(found, start, end);
 			}
 
@@ -214,7 +214,7 @@ class Mapping {
 	 * @param {number} end position to end at
 	 * @return {Range}
 	 */
-	findEnd(root, start, end){
+	findEnd(root, start, end) {
 		var stack = [root];
 		var $el;
 		var $prev = root;
@@ -237,9 +237,9 @@ class Mapping {
 					left = Math.round(elPos.left);
 					right = Math.round(elPos.right);
 
-					if(left > end && $prev) {
+					if (left > end && $prev) {
 						return $prev;
-					} else if(right > end) {
+					} else if (right > end) {
 						return node;
 					} else {
 						$prev = node;
@@ -251,9 +251,9 @@ class Mapping {
 					left = Math.round(this.horizontal ? elPos.left : elPos.top);
 					right = Math.round(this.horizontal ? elPos.right : elPos.bottom);
 
-					if(right < start && $prev) {
+					if (right < start && $prev) {
 						return $prev;
-					} else if(left < start) {
+					} else if (left < start) {
 						return node;
 					} else {
 						$prev = node;
@@ -265,9 +265,9 @@ class Mapping {
 					top = Math.round(elPos.top);
 					bottom = Math.round(elPos.bottom);
 
-					if(top > end && $prev) {
+					if (top > end && $prev) {
 						return $prev;
-					} else if(bottom > end) {
+					} else if (bottom > end) {
 						return node;
 					} else {
 						$prev = node;
@@ -279,7 +279,7 @@ class Mapping {
 			});
 
 
-			if(found){
+			if (found) {
 				return this.findTextEndRange(found, start, end);
 			}
 
@@ -297,7 +297,7 @@ class Mapping {
 	 * @param {number} end position to end at
 	 * @return {Range}
 	 */
-	findTextStartRange(node, start, end){
+	findTextStartRange(node, start, end) {
 		var ranges = this.splitTextNodeIntoRanges(node);
 		var range;
 		var pos;
@@ -311,21 +311,21 @@ class Mapping {
 			if (this.horizontal && this.direction === "ltr") {
 
 				left = pos.left;
-				if( left >= start ) {
+				if (left >= start) {
 					return range;
 				}
 
 			} else if (this.horizontal && this.direction === "rtl") {
 
 				right = pos.right;
-				if( right <= end ) {
+				if (right <= end) {
 					return range;
 				}
 
 			} else {
 
 				top = pos.top;
-				if( top >= start ) {
+				if (top >= start) {
 					return range;
 				}
 
@@ -346,7 +346,7 @@ class Mapping {
 	 * @param {number} end position to end at
 	 * @return {Range}
 	 */
-	findTextEndRange(node, start, end){
+	findTextEndRange(node, start, end) {
 		var ranges = this.splitTextNodeIntoRanges(node);
 		var prev;
 		var range;
@@ -363,9 +363,9 @@ class Mapping {
 				left = pos.left;
 				right = pos.right;
 
-				if(left > end && prev) {
+				if (left > end && prev) {
 					return prev;
-				} else if(right > end) {
+				} else if (right > end) {
 					return range;
 				}
 
@@ -374,9 +374,9 @@ class Mapping {
 				left = pos.left
 				right = pos.right;
 
-				if(right < start && prev) {
+				if (right < start && prev) {
 					return prev;
-				} else if(left < start) {
+				} else if (left < start) {
 					return range;
 				}
 
@@ -385,9 +385,9 @@ class Mapping {
 				top = pos.top;
 				bottom = pos.bottom;
 
-				if(top > end && prev) {
+				if (top > end && prev) {
 					return prev;
-				} else if(bottom > end) {
+				} else if (bottom > end) {
 					return range;
 				}
 
@@ -399,7 +399,7 @@ class Mapping {
 		}
 
 		// Ends before limit
-		return ranges[ranges.length-1];
+		return ranges[ranges.length - 1];
 
 	}
 
@@ -410,7 +410,7 @@ class Mapping {
 	 * @param {string} [_splitter] what to split on
 	 * @return {Range[]}
 	 */
-	splitTextNodeIntoRanges(node, _splitter){
+	splitTextNodeIntoRanges(node, _splitter) {
 		var ranges = [];
 		var textContent = node.textContent || "";
 		var text = textContent.trim();
@@ -420,7 +420,7 @@ class Mapping {
 
 		var pos = text.indexOf(splitter);
 
-		if(pos === -1 || node.nodeType != Node.TEXT_NODE) {
+		if (pos === -1 || node.nodeType != Node.TEXT_NODE) {
 			range = doc.createRange();
 			range.selectNodeContents(node);
 			return [range];
@@ -432,22 +432,22 @@ class Mapping {
 		ranges.push(range);
 		range = false;
 
-		while ( pos != -1 ) {
+		while (pos != -1) {
 
 			pos = text.indexOf(splitter, pos + 1);
-			if(pos > 0) {
+			if (pos > 0) {
 
-				if(range) {
+				if (range) {
 					range.setEnd(node, pos);
 					ranges.push(range);
 				}
 
 				range = doc.createRange();
-				range.setStart(node, pos+1);
+				range.setStart(node, pos + 1);
 			}
 		}
 
-		if(range) {
+		if (range) {
 			range.setEnd(node, text.length);
 			ranges.push(range);
 		}
@@ -463,7 +463,7 @@ class Mapping {
 	 * @param {object} rangePair { start: Range, end: Range }
 	 * @return {object} { start: "epubcfi(...)", end: "epubcfi(...)" }
 	 */
-	rangePairToCfiPair(cfiBase, rangePair){
+	rangePairToCfiPair(cfiBase, rangePair) {
 
 		var startRange = rangePair.start;
 		var endRange = rangePair.end;
@@ -481,7 +481,7 @@ class Mapping {
 
 	}
 
-	rangeListToCfiList(cfiBase, columns){
+	rangeListToCfiList(cfiBase, columns) {
 		var map = [];
 		var cifPair;
 

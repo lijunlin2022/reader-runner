@@ -37,7 +37,7 @@ class Path {
 	 * @param	{string} what
 	 * @returns {object}
 	 */
-	parse (what) {
+	parse(what) {
 		return path.parse(what);
 	}
 
@@ -45,7 +45,7 @@ class Path {
 	 * @param	{string} what
 	 * @returns {boolean}
 	 */
-	isAbsolute (what) {
+	isAbsolute(what) {
 		return path.isAbsolute(what || this.path);
 	}
 
@@ -54,8 +54,8 @@ class Path {
 	 * @param	{string} what
 	 * @returns {boolean}
 	 */
-	isDirectory (what) {
-		return (what.charAt(what.length-1) === "/");
+	isDirectory(what) {
+		return (what.charAt(what.length - 1) === "/");
 	}
 
 	/**
@@ -65,7 +65,7 @@ class Path {
 	 * @param	{string} what
 	 * @returns {string} resolved
 	 */
-	resolve (what) {
+	resolve(what) {
 		return path.resolve(this.directory, what);
 	}
 
@@ -76,7 +76,7 @@ class Path {
 	 * @param	{string} what
 	 * @returns {string} relative
 	 */
-	relative (what) {
+	relative(what) {
 		var isAbsolute = what && (what.indexOf("://") > -1);
 
 		if (isAbsolute) {
@@ -94,7 +94,7 @@ class Path {
 	 * Return the path string
 	 * @returns {string} path
 	 */
-	toString () {
+	toString() {
 		return this.path;
 	}
 }

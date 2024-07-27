@@ -23,9 +23,9 @@ class Url {
 		this.base = baseString;
 
 		if (!absolute &&
-				baseString !== false &&
-				typeof(baseString) !== "string" &&
-				window && window.location) {
+			baseString !== false &&
+			typeof (baseString) !== "string" &&
+			window && window.location) {
 			this.base = window.location.href;
 		}
 
@@ -67,7 +67,7 @@ class Url {
 	/**
 	 * @returns {Path}
 	 */
-	path () {
+	path() {
 		return this.Path;
 	}
 
@@ -76,7 +76,7 @@ class Url {
 	 * @param {string} what
 	 * @returns {string} url
 	 */
-	resolve (what) {
+	resolve(what) {
 		var isAbsolute = (what.indexOf("://") > -1);
 		var fullpath;
 
@@ -93,14 +93,14 @@ class Url {
 	 * @param {string} what
 	 * @returns {string} path
 	 */
-	relative (what) {
+	relative(what) {
 		return path.relative(what, this.directory);
 	}
 
 	/**
 	 * @returns {string}
 	 */
-	toString () {
+	toString() {
 		return this.href;
 	}
 }

@@ -1,7 +1,7 @@
 import EpubCFI from "./epubcfi";
 import Hook from "./utils/hook";
 import Section from "./section";
-import {replaceBase, replaceCanonical, replaceMeta} from "./utils/replacements";
+import { replaceBase, replaceCanonical, replaceMeta } from "./utils/replacements";
 
 /**
  * A collection of Spine Items
@@ -46,7 +46,7 @@ class Spine {
 		this.baseUrl = _package.baseUrl || _package.basePath || "";
 		this.length = this.items.length;
 
-		this.items.forEach( (item, index) => {
+		this.items.forEach((item, index) => {
 			var manifestItem = this.manifest[item.idref];
 			var spineItem;
 
@@ -58,21 +58,21 @@ class Spine {
 				item.canonical = canonical(item.href);
 			}
 
-			if(manifestItem) {
+			if (manifestItem) {
 				item.href = manifestItem.href;
 				item.url = resolver(item.href, true);
 				item.canonical = canonical(item.href);
 
-				if(manifestItem.properties.length){
+				if (manifestItem.properties.length) {
 					item.properties.push.apply(item.properties, manifestItem.properties);
 				}
 			}
 
 			if (item.linear === "yes") {
-				item.prev = function() {
+				item.prev = function () {
 					let prevIndex = item.index;
 					while (prevIndex > 0) {
-						let prev = this.get(prevIndex-1);
+						let prev = this.get(prevIndex - 1);
 						if (prev && prev.linear) {
 							return prev;
 						}
@@ -80,10 +80,10 @@ class Spine {
 					}
 					return;
 				}.bind(this);
-				item.next = function() {
+				item.next = function () {
 					let nextIndex = item.index;
-					while (nextIndex < this.spineItems.length-1) {
-						let next = this.get(nextIndex+1);
+					while (nextIndex < this.spineItems.length - 1) {
+						let next = this.get(nextIndex + 1);
 						if (next && next.linear) {
 							return next;
 						}
@@ -92,10 +92,10 @@ class Spine {
 					return;
 				}.bind(this);
 			} else {
-				item.prev = function() {
+				item.prev = function () {
 					return;
 				}
-				item.next = function() {
+				item.next = function () {
 					return;
 				}
 			}
@@ -131,14 +131,14 @@ class Spine {
 				}
 				index += 1;
 			}
-		} else if(this.epubcfi.isCfiString(target)) {
+		} else if (this.epubcfi.isCfiString(target)) {
 			let cfi = new EpubCFI(target);
 			index = cfi.spinePos;
-		} else if(typeof target === "number" || isNaN(target) === false){
+		} else if (typeof target === "number" || isNaN(target) === false) {
 			index = target;
-		} else if(typeof target === "string" && target.indexOf("#") === 0) {
+		} else if (typeof target === "string" && target.indexOf("#") === 0) {
 			index = this.spineById[target.substring(1)];
-		} else if(typeof target === "string") {
+		} else if (typeof target === "string") {
 			// Remove fragments
 			target = target.split("#")[0];
 			index = this.spineByHref[target] || this.spineByHref[encodeURI(target)];
@@ -180,7 +180,7 @@ class Spine {
 		this.spineById[section.idref] = 0;
 
 		// Re-index
-		this.spineItems.forEach(function(item, index){
+		this.spineItems.forEach(function (item, index) {
 			item.index = index;
 		});
 
@@ -199,7 +199,7 @@ class Spine {
 	remove(section) {
 		var index = this.spineItems.indexOf(section);
 
-		if(index > -1) {
+		if (index > -1) {
 			delete this.spineByHref[section.href];
 			delete this.spineById[section.idref];
 
@@ -229,7 +229,7 @@ class Spine {
 				return next;
 			}
 			index += 1;
-		} while (index < this.spineItems.length) ;
+		} while (index < this.spineItems.length);
 	}
 
 	/**
@@ -237,7 +237,7 @@ class Spine {
 	 * @return {Section} last section
 	 */
 	last() {
-		let index = this.spineItems.length-1;
+		let index = this.spineItems.length - 1;
 
 		do {
 			let prev = this.get(index);
